@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_macros.html" import orders_table, activity, received_table %}
+{% block title %}Dealer{% endblock %}
+{% block head %}<meta http-equiv="refresh" content="5">{% endblock %}
+{% block body %}
+<p class="muted">This page refreshes every 5 seconds.</p>
+<h2>Stock vs reorder level</h2>
+<table><tr><th>Medicine</th><th>On hand</th><th>Reorder level</th><th>After incoming orders</th><th>Status</th></tr>
+{% for o in d.own_check %}<tr><td>{{ o.medicine }}</td><td class="r">{{ o.stock|num }}</td><td class="r">{{ o.reorder_level|num }}</td><td class="r">{{ o.projected|num }}</td>
+<td>{% if o.replenish_qty %}<span class="pill draft">below level, restock {{ o.replenish_qty|num }}</span>{% elif o.note %}{{ o.note }}{% else %}<span class="pill filled">ok</span>{% endif %}</td></tr>{% endfor %}</table>
+
+<h2>Incoming pharmacy orders (approved, not yet filled)</h2>
+{% if d.incoming %}<table><tr><th>#</th><th>Pharmacy</th><th>Medicine</th><th>Ordered</th><th>Can fill</th><th>Short</th></tr>
+{% for i in d.incoming %}<tr><td>{{ i.order_id }}</td><td>{{ i.pharmacy }}</td><td>{{ i.medicine }}</td><td class="r">{{ i.ordered|num }}</td><td class="r">{{ i.can_fill|num }}</td><td class="r">{{ i.short|num }}</td></tr>{% endfor %}</table>
+{% else %}<p class="muted">None waiting.</p>{% endif %}
+
+{{ orders_table(d.orders|selectattr('status', 'equalto', 'draft')|list, user, 'Drafts waiting for you (restock requests to C&F)') }}
+{{ orders_table(d.orders, user, 'Our orders to C&F (this app)') }}
+
+<h2>Recent C&amp;F orders (workbook history)</h2>
+<table class="small"><tr><th>Date</th><th>C&amp;F</th><th>Medicine</th><th>Qty</th><th>Status</th></tr>
+{% for h in d.history_to_cf %}<tr><td>{{ h.order_date }}</td><td>{{ h.cf }}</td><td>{{ h.medicine }}</td><td class="r">{{ h.qty|num }}</td><td>{{ h.status }}</td></tr>{% endfor %}</table>
+{{ received_table(d.received, "Orders received from pharmacies (all)", "dealer-agent") }}
+{{ activity(act) }}
+{% endblock %}

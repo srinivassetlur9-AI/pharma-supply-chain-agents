@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pill, activity, received_table %}
+{% block title %}Manufacturer{% endblock %}
+{% block head %}<meta http-equiv="refresh" content="5">{% endblock %}
+{% block body %}
+<p class="muted">This page refreshes every 5 seconds.</p>
+<p class="muted">Assumption: {{ d.assumption }}.</p>
+<h2>Capacity and unit cost</h2>
+<table><tr><th>Medicine</th><th>Capacity per request</th><th>Unit cost</th></tr>
+{% for c in d.capacity %}<tr><td>{{ c.medicine }}</td><td class="r">{{ c.production_capacity|num }}</td><td class="r">{{ '%.2f' % c.unit_cost }}</td></tr>{% endfor %}</table>
+
+<h2>Incoming C&amp;F requests (approved, not yet planned)</h2>
+{% if d.incoming %}<table><tr><th>#</th><th>C&amp;F</th><th>Medicine</th><th>Requested</th><th>Batch</th><th>Ready</th><th>Value</th><th>Overflow</th></tr>
+{% for i in d.incoming %}<tr><td>{{ i.order_id }}</td><td>{{ i.cf }}</td><td>{{ i.medicine }}</td><td class="r">{{ i.requested|num }}</td><td class="r">{{ i.batch_qty|num }}</td><td>{{ i.ready_date }}</td><td class="r">{{ i.value|rs }}</td><td>{% if i.overflow_qty %}{{ i.overflow_qty|num }} to {{ i.overflow_to or '?' }}{% endif %}</td></tr>{% endfor %}</table>
+{% else %}<p class="muted">None waiting.</p>{% endif %}
+
+<h2>Production plans <small class="muted">(a plan needs a person at {{ d.org }}; once approved, the C&amp;F page shows its ready date)</small></h2>
+{% if d.plans %}<table><tr><th>#</th><th>Medicine</th><th>Qty</th><th>Value</th><th>Ready</th><th>Status</th><th>Reason</th><th>Next step</th></tr>
+{% for p in d.plans %}<tr><td>{{ p.id }}</td><td>{{ p.medicine }}</td><td class="r">{{ p.qty|num }}</td><td class="r">{{ p.value|rs }}</td><td>{{ p.ready_date }}</td>
+<td>{{ pill(p.status) }}{% if p.approved_by %} <small class="muted">by {{ p.approved_by }}</small>{% endif %}</td><td class="why">{{ p.reason }}</td>
+<td>{% if p.status == 'draft' %}<small>Approve as <code>{{ user.username }}</code></small><br><form method="post" action="/plans/{{ p.id }}/approve" class="inline"><button class="ok">Approve</button></form>
+<form method="post" action="/plans/{{ p.id }}/reject" class="inline"><button class="no">Reject</button></form>{% endif %}</td></tr>{% endfor %}</table>
+{% else %}<p class="muted">No plans yet.</p>{% endif %}
+{{ received_table(d.received, "Requests received from C&F agents (all)", "manufacturer-agent") }}
+{{ activity(act) }}
+{% endblock %}

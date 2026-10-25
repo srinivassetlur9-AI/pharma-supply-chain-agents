@@ -1,0 +1,40 @@
+{% macro pill(s) %}<span class="pill {{ s }}">{{ s.replace('_', ' ') }}</span>{% endmacro %}
+
+{% macro orders_table(orders, user, title) %}
+<h2>{{ title }}</h2>
+{% if orders %}
+<table><tr><th>#</th><th>Medicine</th><th>Sent to</th><th>Qty</th><th>Value</th><th>Status</th><th>What happens next / result</th><th>Reason</th><th></th></tr>
+{% for o in orders %}<tr>
+<td>{{ o.id }}</td><td>{{ o.medicine }}</td>
+<td>{{ o.to_org }}<br><small class="muted">{{ o.to_agent }} &middot; login {{ o.to_login }}</small></td>
+<td class="r">{{ o.qty|num }}</td><td class="r">{{ o.value|rs }}</td>
+<td>{{ pill(o.status) }}{% if o.approved_by == 'policy' %} <small class="muted">by policy</small>{% elif o.approved_by %} <small class="muted">by {{ o.approved_by }}</small>{% endif %}</td>
+<td>{% if o.status == 'draft' %}<b>Needs approval.</b> Log in as <code>{{ o.approver_login }}</code>.
+{% elif o.status in ('approved', 'auto_approved') %}Delivered to {{ o.to_org }}; {{ o.to_agent }} will check stock.
+{% elif o.status == 'rejected' %}Rejected by {{ o.approved_by }}.
+{% elif o.to_type == 'manufacturer' %}Filled by manufacturer-agent: {{ o.to_org }} planned {{ o.plan_qty|num }} units, ready {{ o.plan_ready }}.
+{% if o.plan_status == 'draft' %}<b>Plan waiting</b> for <code>{{ o.to_login }}</code> to approve.{% elif o.plan_status %}Plan #{{ o.plan_id }} {{ o.plan_status.replace('_', ' ') }}{% if o.plan_by %} by {{ o.plan_by }}{% endif %}.{% endif %}
+{% else %}{{ o.to_agent }} filled {{ o.filled_qty|num }}{% if o.short_qty %}, short {{ o.short_qty|num }} (escalated to the next level){% endif %}.{% endif %}</td>
+<td class="why">{{ o.reason }}</td>
+<td>{% if o.status == 'draft' %}
+<form method="post" action="/orders/{{ o.id }}/approve" class="inline"><button class="ok">Approve</button></form>
+<form method="post" action="/orders/{{ o.id }}/reject" class="inline"><button class="no">Reject</button></form>{% endif %}</td>
+</tr>{% endfor %}</table>
+{% else %}<p class="muted">None yet.</p>{% endif %}
+{% endmacro %}
+
+{% macro activity(act) %}
+<h2>Agent activity</h2>
+<table class="small"><tr><th>Time</th><th>Who</th><th>Type</th><th>Action</th><th>Detail</th></tr>
+{% for a in act %}<tr><td>{{ a.ts }}</td><td>{% for n in ["pharmacy-coordinator","dealer-agent","cf-agent","manufacturer-agent"] %}{% if a.actor.startswith(n) %}<img class="av" src="/static/agents/{{ n }}.svg" alt="">{% endif %}{% endfor %}{{ a.actor }}</td><td>{{ pill(a.actor_type) }}</td><td>{{ a.action }}</td><td>{{ a.detail }}</td></tr>
+{% else %}<tr><td colspan="5" class="muted">No activity yet.</td></tr>{% endfor %}</table>
+{% endmacro %}
+
+{% macro received_table(rows, title, agent) %}
+<h2>{{ title }}</h2>
+{% if rows %}
+<table><tr><th>#</th><th>From</th><th>Medicine</th><th>Ordered</th><th>Status</th><th>What {{ agent }} did</th></tr>
+{% for o in rows %}<tr><td>{{ o.id }}</td><td>{{ o.from_org }}<br><small class="muted">login {{ o.approver_login }}</small></td><td>{{ o.medicine }}</td><td class="r">{{ o.qty|num }}</td><td>{{ pill(o.status) }}</td>
+<td>{% if o.filled_qty is not none %}<img class="av" src="/static/agents/{{ agent }}.svg" alt=""> {{ agent }} filled {{ o.filled_qty|num }}{% if o.short_qty %}, short {{ o.short_qty|num }} (escalated){% endif %}{% else %}waiting for {{ agent }}{% endif %}</td></tr>{% endfor %}</table>
+{% else %}<p class="muted">Nothing received yet.</p>{% endif %}
+{% endmacro %}

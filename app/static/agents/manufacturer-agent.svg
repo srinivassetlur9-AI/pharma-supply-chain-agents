@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="manufacturer-agent">
+<circle cx="32" cy="32" r="30" fill="#7a3fd1"/>
+<rect x="14" y="16" width="36" height="26" rx="8" fill="#fff"/>
+<circle cx="25" cy="29" r="3.5" fill="#7a3fd1"/><circle cx="39" cy="29" r="3.5" fill="#7a3fd1"/>
+<rect x="29" y="9" width="6" height="8" rx="2" fill="#fff"/><circle cx="32" cy="8" r="3" fill="#fff"/>
+<g fill="#fff" stroke="#fff"><path d="M18 57V47l8 4v-4l8 4v-4l8 4v-9h4v14z" stroke="none"/></g></svg>

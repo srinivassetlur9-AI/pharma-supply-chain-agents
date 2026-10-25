@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Pharma chain{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">{% block head %}{% endblock %}</head>
+<body>
+{% if user %}
+<header>
+  <div><h1>{{ user.org }}</h1><span class="muted">{{ titles[user.type] }} &middot; signed in as {{ user.username }} &middot; as-of {{ as_of }}</span></div>
+  <nav class="chain">{% for r in roles %}<span class="{{ 'on' if r == user.type }}">{{ titles[r] }}</span>{% if not loop.last %}<i>&rsaquo;</i>{% endif %}{% endfor %}</nav>
+  <a class="btn" href="/logout">Logout</a>
+</header>
+<div class="agents">
+  {% set cast = [('pharmacy-coordinator','Main agent','pharmacy'),('dealer-agent','Subagent 1','dealer'),('cf-agent','Subagent 2','cf'),('manufacturer-agent','Subagent 3','manufacturer')] %}
+  {% for n, label, role in cast %}<div class="agent {{ 'on' if role == user.type }}"><img src="{{ url_for('static', filename='agents/' ~ n ~ '.svg') }}" alt="{{ n }}"><b>{{ n }}</b><small>{{ label }}</small></div>{% if not loop.last %}<i>&rsaquo;</i>{% endif %}{% endfor %}
+</div>
+<div class="settings">Approval mode: <b>{{ mode }}</b>
+  {% if mode == 'threshold' %}(orders up to {{ limit|rs }} are auto-approved by policy; larger ones wait for a person){% else %}(every order and plan waits for a person){% endif %}
+  <form method="post" action="/settings/approval_mode" class="inline"><input type="hidden" name="mode" value="{{ 'all' if mode == 'threshold' else 'threshold' }}"><button>Switch to {{ 'all' if mode == 'threshold' else 'threshold' }}</button></form>
+</div>
+{% endif %}
+<main>
+{% with m = get_flashed_messages() %}{% for x in m %}<p class="flash">{{ x }}</p>{% endfor %}{% endwith %}
+{% block body %}{% endblock %}
+</main></body></html>

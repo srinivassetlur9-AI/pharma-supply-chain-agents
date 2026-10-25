@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block body %}
+<h1>Pharma supply chain demo</h1>
+<p class="muted">Pharmacy &rsaquo; Dealer &rsaquo; C&amp;F agent &rsaquo; Manufacturer. Synthetic data only.</p>
+<form method="post" class="login">
+  <label>Username <input name="username" autofocus required></label>
+  <label>Password <input name="password" type="password" required></label>
+  <button class="ok">Log in</button>
+</form>
+<h2>Demo accounts <small class="muted">(password for all: demo123, demo-only)</small></h2>
+<table><tr><th>Username</th><th>Organisation</th><th>Role</th></tr>
+{% for a in accounts %}<tr><td><code>{{ a.username }}</code></td><td>{{ a.org }}</td><td>{{ titles[a.type] }}</td></tr>{% endfor %}</table>
+{% endblock %}

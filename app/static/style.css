@@ -1,0 +1,22 @@
+body{font:15px/1.4 system-ui,Segoe UI,sans-serif;margin:0;color:#1d2433;background:#f6f7f9}
+header{display:flex;gap:24px;align-items:center;justify-content:space-between;padding:12px 24px;background:#fff;border-bottom:1px solid #dde1e8;flex-wrap:wrap}
+h1{margin:0;font-size:20px}h2{font-size:16px;margin:28px 0 8px}
+main{max-width:1200px;margin:0 auto;padding:8px 24px 48px}
+.muted{color:#6b7385}.chain span{padding:3px 10px;border-radius:12px;background:#eef0f4}.chain span.on{background:#1f5eff;color:#fff}.chain i{margin:0 6px;color:#9aa1b2;font-style:normal}
+.settings{padding:8px 24px;background:#fff8e1;border-bottom:1px solid #f0e2b0;font-size:13px}
+table{border-collapse:collapse;width:100%;background:#fff;border:1px solid #dde1e8}th,td{padding:6px 10px;border-bottom:1px solid #eceef3;text-align:left;vertical-align:top}
+th{background:#f0f2f6;font-size:12px;text-transform:uppercase;letter-spacing:.03em}td.r{text-align:right}td.why{max-width:320px;font-size:13px}.small td{font-size:12px}
+.spark{font-family:monospace;letter-spacing:-1px;color:#1f5eff}
+.pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;background:#e6e8ee}
+.pill.draft{background:#ffe9a8}.pill.approved,.pill.auto_approved,.pill.policy{background:#cfe8ff}.pill.filled{background:#c9f0d3}.pill.partial{background:#ffd9b3}.pill.rejected{background:#ffd0d0}.pill.agent{background:#e7dcff}.pill.human{background:#d8f3e4}
+button,.btn{font:inherit;padding:4px 12px;border:1px solid #c5cad6;border-radius:6px;background:#fff;cursor:pointer;text-decoration:none;color:inherit}
+button.ok{background:#1f8f4e;color:#fff;border-color:#1f8f4e}button.no{background:#fff;color:#b3261e;border-color:#b3261e}
+form.inline{display:inline;margin:0}.row{display:flex;gap:8px}.login{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.login label{display:flex;flex-direction:column;font-size:13px}
+input,select{font:inherit;padding:5px 8px;border:1px solid #c5cad6;border-radius:6px}.flash{background:#ffd0d0;padding:8px 12px;border-radius:6px}
+
+.agents{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 24px;background:#fff;border-bottom:1px solid #dde1e8;flex-wrap:wrap}
+.agents i{color:#9aa1b2;font-style:normal;font-size:20px}
+.agent{display:flex;flex-direction:column;align-items:center;width:150px;padding:6px;border-radius:10px;border:2px solid transparent;opacity:.55}
+.agent img{width:52px;height:52px}.agent small{color:#6b7385}.agent b{font-size:13px}
+.agent.on{opacity:1;border-color:#1f5eff;background:#eef3ff}
+img.av{width:20px;height:20px;vertical-align:middle;margin-right:4px}

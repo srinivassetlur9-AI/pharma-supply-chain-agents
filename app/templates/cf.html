@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_macros.html" import orders_table, activity, received_table %}
+{% block title %}C&amp;F{% endblock %}
+{% block head %}<meta http-equiv="refresh" content="5">{% endblock %}
+{% block body %}
+<p class="muted">This page refreshes every 5 seconds.</p>
+<h2>Stock, cover and reorder point</h2>
+<table><tr><th>Medicine</th><th>Stock</th><th>Batch</th><th>Expiry</th><th>Avg out/day</th><th>Days of cover</th><th>Reorder point</th><th>Manufacturer</th><th>Status</th></tr>
+{% for o in d.own_check %}<tr><td>{{ o.medicine }}</td><td class="r">{{ o.stock|num }}</td><td>{{ o.batch }}</td>
+<td>{{ o.expiry }}{% if o.expires_within_180_days %} <span class="pill draft">expires soon</span>{% endif %}</td>
+<td class="r">{{ o.avg_daily_out }}</td><td class="r">{{ o.days_of_cover }}</td><td class="r">{{ o.reorder_point|num }}</td><td>{{ o.manufacturer }} ({{ o.lead_days }} d)</td>
+<td>{% if o.replenish_qty %}<span class="pill draft">below point, request {{ o.replenish_qty|num }}</span>{% elif o.note %}{{ o.note }}{% else %}<span class="pill filled">ok</span>{% endif %}</td></tr>{% endfor %}</table>
+
+<h2>Incoming dealer requests (approved, not yet dispatched)</h2>
+{% if d.incoming %}<table><tr><th>#</th><th>Dealer</th><th>Medicine</th><th>Requested</th><th>Can dispatch</th><th>Short</th><th>Batch</th></tr>
+{% for i in d.incoming %}<tr><td>{{ i.order_id }}</td><td>{{ i.dealer }}</td><td>{{ i.medicine }}</td><td class="r">{{ i.requested|num }}</td><td class="r">{{ i.can_dispatch|num }}</td><td class="r">{{ i.short|num }}</td><td>{{ i.batch }}</td></tr>{% endfor %}</table>
+{% else %}<p class="muted">None waiting.</p>{% endif %}
+
+{{ orders_table(d.orders|selectattr('status', 'equalto', 'draft')|list, user, 'Drafts waiting for you (requests to manufacturers)') }}
+{{ orders_table(d.orders, user, 'Our requests to manufacturers') }}
+{{ received_table(d.received, "Requests received from dealers (all)", "cf-agent") }}
+{{ activity(act) }}
+{% endblock %}

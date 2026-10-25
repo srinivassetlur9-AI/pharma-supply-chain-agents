@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import orders_table, activity %}
+{% block title %}Pharmacy{% endblock %}
+{% block body %}
+<h2>Stock and demand</h2>
+<p class="muted">Assumption: stock is an <b>estimate</b> (latest order minus sales since). Forecast: last {{ d.settings.forecast_window_days }} days of sales, cover = {{ d.settings.pharmacy_lead_days }} lead + {{ d.settings.safety_stock_days }} safety days.</p>
+<table><tr><th>Medicine</th><th>On hand (estimate)</th><th>Sold, 28 days</th><th>Avg/day</th><th>Days left</th><th>28-day trend</th><th>Preferred dealer (gets the order)</th></tr>
+{% for m in d.medicines %}{% set avg = m.sales_total / d.settings.forecast_window_days %}
+<tr><td>{{ m.medicine }}</td><td class="r">{{ m.on_hand|num }}</td><td class="r">{{ m.sales_total|num }}</td><td class="r">{{ '%.2f' % avg }}</td>
+<td class="r">{{ '%.1f' % (m.on_hand / avg) if avg else '-' }}</td><td class="spark">{{ m.daily_sales|spark }}</td><td>{{ m.dealer }}</td></tr>{% endfor %}</table>
+
+{{ orders_table(d.orders|selectattr('status', 'equalto', 'draft')|list, user, 'Drafts waiting for you') }}
+
+<h2>Place a manual order</h2>
+<form method="post" action="/orders/manual" class="row">
+  <select name="medicine">{% for m in d.medicines %}<option>{{ m.medicine }}</option>{% endfor %}</select>
+  <input name="qty" type="number" min="1" placeholder="Quantity" required><button class="ok">Place order</button>
+</form>
+
+{{ orders_table(d.orders, user, 'Order history') }}
+{{ activity(act) }}
+{% endblock %}
